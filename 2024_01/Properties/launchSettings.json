@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "2024_01": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Home\\osk\\Documents\\Develop\\AOC\\2024_01\\input1.txt"
+    }
+  }
+}
