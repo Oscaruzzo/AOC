@@ -4,15 +4,16 @@
 	{
 		private const int w = 130;
 		private const int h = 130;
+		private const string input = "input.txt";
+		private const bool print = false;
 
-		static int[] xDirs = [0, +1, 0, -1];
-		static int[] yDirs = [-1, 0, +1, 0];
+		static readonly int[] xDirs = [0, +1, 0, -1];
+		static readonly int[] yDirs = [-1, 0, +1, 0];
 
 		private const int WALL = 1000;
 		private const int SPACE = 0;
-		private const int SEEN = 2000;
 
-		protected static void WriteAt(char s, int x, int y) {
+		protected static void WriteAt<T>(T s, int x, int y) {
 			try {
 				Console.SetCursorPosition(x, y);
 				Console.Write(s);
@@ -21,53 +22,39 @@
 				Console.WriteLine(e.Message);
 			}
 		}
-		protected static void PrintMatrix(int[,] data, int cx, int cy, int currentDir) {
+		protected static void PrintMatrix(int[,] data) {
 			for (int y = 0; y < h; y++) {
 				for (int x = 0; x < w; x++) {
-					if (x == cx && y == cy) {
-						switch (currentDir) {
-						case 0:
-							WriteAt('↑', x, y);
-							break;
-						case 1:
-							WriteAt('→', x, y);
-							break;
-						case 2:
-							WriteAt('↓', x, y);
-							break;
-						case 3:
-							WriteAt('←', x, y);
-							break;
-						}
-					} else if (data[x, y] == WALL) {
-						WriteAt('#', x, y);
+					if (data[x, y] == WALL) {
+						WriteAt('█', x, y);
 					} else if (data[x, y] == SPACE) {
 						WriteAt('·', x, y);
-					} else { // SEEN
-						WriteAt('o', x, y);
 					}
 				}
 			}
 			Console.WriteLine();
 		}
 
-		protected static int Walk(int[,] data, int startX, int startY) {
+		protected static int Walk(int[,] data, byte[,] path, int startX, int startY) {
 			int x = startX, y = startY;
 			int currentDir = 0;
 			int len = 0;
 			bool done = false;
+
+			if (print)
+				PrintMatrix(data);
+
 			while (!done) {
 				// check current position
-				if (data[x, y] == SPACE) {
+				if (data[x, y] == SPACE && path[x, y] == 0) {
 					len++;
 				}
-				if (0 != (data[x, y] & 1 << currentDir)) {
+				if (0 != (path[x, y] & 1 << currentDir)) {
 					// already been here in this direction! it's a loop
 					return -1;
 				}
-				data[x, y] |= 1 << currentDir;
+				path[x, y] |= (byte) (1 << currentDir);
 
-				//PrintMatrix(data, x, y, currentDir);
 				int newX, newY;
 				do {
 					newX = x + xDirs[currentDir];
@@ -87,6 +74,28 @@
 						break;
 					}
 				} while (true);
+
+				if (print) {
+					WriteAt('░', x, y);
+
+					if (!done) {
+						switch (currentDir) {
+						case 0:
+							WriteAt('↑', newX, newY);
+							break;
+						case 1:
+							WriteAt('→', newX, newY);
+							break;
+						case 2:
+							WriteAt('↓', newX, newY);
+							break;
+						case 3:
+							WriteAt('←', newX, newY);
+							break;
+						}
+					}
+				}
+
 				x = newX;
 				y = newY;
 			}
@@ -101,13 +110,21 @@
 						data[x, y] = SPACE;
 		}
 
-		static void Main(string[] args) {
+		protected static void ResetPath(byte[,] path) {
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++)
+					path[x, y] = 0;
+		}
+
+		static void Main() {
 			int[,] data = new int[w, h];
+			byte[,] firstPath = new byte[w, h];
+			byte[,] tentativePath = new byte[w, h];
 			int startX = -1, startY = -1;
 
 			{ // read input
 				int y = 0;
-				foreach (var line in File.ReadLines("input.txt")) {
+				foreach (var line in File.ReadLines(input)) {
 					int x = 0;
 					foreach (var c in line) {
 						if (c == '#') {
@@ -126,7 +143,8 @@
 			}
 
 			{ // part 1
-				int walkLen = Walk(data, startX, startY);
+				int walkLen = Walk(data, firstPath, startX, startY);
+				Console.SetCursorPosition(0, h + 2);
 				Console.WriteLine(walkLen);
 			}
 
@@ -134,15 +152,18 @@
 				int nLoops = 0;
 				for (int x = 0; x < w; x++) {
 					for (int y = 0; y < h; y++) {
-						ResetData(data);
-						if (data[x, y] != WALL && (x != startX || y != startY)) {
-							data[x, y] = WALL;
-							if (Walk(data, startX, startY) == -1)
-								nLoops++;
-							data[x, y] = SPACE;
+						if (firstPath[x, y] != 0) {
+							ResetPath(tentativePath);
+							if (data[x, y] != WALL && (x != startX || y != startY)) {
+								data[x, y] = WALL;
+								if (Walk(data, tentativePath, startX, startY) == -1)
+									nLoops++;
+								data[x, y] = SPACE;
+							}
 						}
 					}
 				}
+				Console.SetCursorPosition(0, h + 3);
 				Console.WriteLine(nLoops);
 			}
 		}
