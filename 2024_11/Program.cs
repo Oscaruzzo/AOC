@@ -71,7 +71,6 @@ namespace _2024_11
 
 				Console.WriteLine();
 			}
-			//Console.WriteLine(stonesIn.Count);
 		}
 	}
 }
