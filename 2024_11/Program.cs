@@ -42,7 +42,7 @@ namespace _2024_11
 			PrintStones();
 			Console.WriteLine();
 
-			for (int nBlink = 1; nBlink <= 75; nBlink++) {
+			for (int nBlink = 1; nBlink <= 150; nBlink++) {
 				stonesIn = stonesOut;
 				stonesOut = [];
 
