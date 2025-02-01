@@ -14,38 +14,43 @@
 		//const int w = 10;
 		//const int h = 10;
 
-		const string input = "input.txt";
-		const int w = 140;
-		const int h = 140;
+		const string input = "sample4.txt";
+		const int w = 6;
+		const int h = 6;
 
 		private static int[,] data = new int[w + 2, h + 2];
 		static readonly int[] xDirs = [+1, 0, 0, -1];
 		static readonly int[] yDirs = [0, +1, -1, 0];
 
-		protected static void PrintMatrix(int cx, int cy) {
-			for (int y = 0; y < h + 2; y++) {
-				Console.SetCursorPosition(0, y);
-				for (int x = 0; x < w + 2; x++) {
-					if (x == cx && y == cy)
-						Console.BackgroundColor = ConsoleColor.DarkBlue;
-					else if (data[x, y] < 0)
-						Console.BackgroundColor = ConsoleColor.DarkGreen;
-					else
-						Console.BackgroundColor = ConsoleColor.Black;
+		protected static void PrintChar(int c, int x, int y, bool highlight) {
+			if (highlight)
+				Console.ForegroundColor = ConsoleColor.White;
+			else
+				Console.ForegroundColor = ConsoleColor.Black;
 
+			if (c < 0)
+				Console.BackgroundColor = ConsoleColor.DarkBlue;
+			else
+				Console.BackgroundColor = ConsoleColor.Black;
+		}
+
+		protected static void PrintMatrix() {
+			Console.SetCursorPosition(0, 0);
+			for (int y = 0; y < h + 2; y++) {
+				for (int x = 0; x < w + 2; x++) {
 					if (data[x, y] == 0)
 						Console.Write('#');
 					else
 						Console.Write((char) Math.Abs(data[x, y]));
 				}
+				Console.WriteLine();
 			}
-			Console.BackgroundColor = ConsoleColor.Black;
 		}
 
 		private static (int area, int borders) MeasureRegion(int c, int x, int y) {
 			int area = 1, borders = 0;
 			data[x, y] = -data[x, y];
-			PrintMatrix(x, y);
+
 			for (int d = 0; d < 4; d++) {
 				int xn = x + xDirs[d];
 				int yn = y + yDirs[d];
@@ -55,7 +60,6 @@
 				} else if (cn == c) {
 					// contiguo
 					var nRegion = MeasureRegion(c, xn, yn);
-					PrintMatrix(x, y);
 					area += nRegion.area;
 					borders += nRegion.borders;
 				} else {
@@ -80,6 +84,8 @@
 			}
 
 			{ // part 1
+				int tot = 0;
+				PrintMatrix();
 				for (int y = 1; y <= h; y++) {
 					for (int x = 1; x <= w; x++) {
 						int c = data[x, y];
@@ -89,9 +95,12 @@
 							Console.WriteLine(
 								"{0} - Area {1} - Borders {2}                                                    ",
 								(char) c, region.area, region.borders);
+							tot += region.area * region.borders;
 						}
 					}
 				}
+				Console.WriteLine();
+				Console.WriteLine("TOT {0}", tot);
 			}
 		}
 	}
