@@ -1,9 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace _2024_13
-{
-	internal class Program
-	{
+namespace _2024_13 {
+	internal class Program {
 		const string input = "input.txt";
 		static void Main() {
 			string[] allLines = File.ReadAllLines(input);
@@ -52,6 +50,9 @@ namespace _2024_13
 
 		private static (long, long) ReadTwoNumbers(string line) {
 			var m = Regex.Matches(line, @"\d+");
+			if (m.Count < 2) {
+				throw new ArgumentException("The input line does not contain at least two numbers.");
+			}
 			return (
 				long.Parse(m[0].Value),
 				long.Parse(m[1].Value));

@@ -1,13 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace _2024_11
-{
-	internal class Program
-	{
+namespace _2024_11 {
+	internal class Program {
 		private static string input = "input.txt";
 
-		private record Stone
-		{
+		private record Stone {
 			public required string Str {
 				get; init;
 			}
@@ -42,7 +39,7 @@ namespace _2024_11
 			PrintStones();
 			Console.WriteLine();
 
-			for (int nBlink = 1; nBlink <= 150; nBlink++) {
+			for (int nBlink = 1; nBlink <= 100; nBlink++) {
 				stonesIn = stonesOut;
 				stonesOut = [];
 
