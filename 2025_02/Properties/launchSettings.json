@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "2025_02": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace _2024_13 {
 	internal class Program {
@@ -25,6 +25,8 @@ namespace _2024_13 {
 			Console.WriteLine("[{0}]", tot2);
 		}
 
+		// Solve for integers (a,b) such that a*da + b*db = prize.
+		// Returns (0,0) if no unique integer solution exists.
 		private static (long a, long b) Solve((long x, long y) da, (long x, long y) db, (long x, long y) prize) {
 			long a1 = da.x;
 			long a2 = da.y;
@@ -33,14 +35,15 @@ namespace _2024_13 {
 			long c1 = prize.x;
 			long c2 = prize.y;
 
-			long det = a2 * b1 - a1 * b2;
+			long det = a2 * b1 - a1 * b2; // determinant
 			if (det == 0) {
 				return (0, 0);
 			}
 
-			long xn = b1 * c2 - b2 * c1;
-			long yn = a1 * c2 - a2 * c1;
+			long xn = b1 * c2 - b2 * c1; // numerator for a (Cramer's rule)
+			long yn = a1 * c2 - a2 * c1; // numerator for b
 
+			// require integer results
 			if (xn % det == 0 && yn % det == 0) {
 				return (xn / det, -yn / det);
 			} else {
@@ -48,6 +51,7 @@ namespace _2024_13 {
 			}
 		}
 
+		// Parse first two integer tokens from a line.
 		private static (long, long) ReadTwoNumbers(string line) {
 			var m = Regex.Matches(line, @"\d+");
 			if (m.Count < 2) {
